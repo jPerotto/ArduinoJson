@@ -8,6 +8,5 @@ add_executable(NumbersTests
 	parseNumber.cpp
 )
 
-target_link_libraries(NumbersTests catch)
 
 add_test(Numbers NumbersTests)

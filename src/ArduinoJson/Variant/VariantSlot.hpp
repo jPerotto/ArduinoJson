@@ -4,11 +4,12 @@
 
 #pragma once
 
+#include <stdint.h>  // int8_t, int16_t
+
 #include <ArduinoJson/Polyfills/gsl/not_null.hpp>
 #include <ArduinoJson/Polyfills/type_traits.hpp>
+#include <ArduinoJson/Strings/StoragePolicy.hpp>
 #include <ArduinoJson/Variant/VariantContent.hpp>
-
-#include <stdint.h>  // int8_t, int16_t
 
 namespace ARDUINOJSON_NAMESPACE {
 
@@ -49,7 +50,8 @@ class VariantSlot {
   VariantSlot* next(size_t distance) {
     VariantSlot* slot = this;
     while (distance--) {
-      if (!slot->_next) return 0;
+      if (!slot->_next)
+        return 0;
       slot += slot->_next;
     }
     return slot;
@@ -68,14 +70,16 @@ class VariantSlot {
     _next = VariantSlotDiff(slot - this);
   }
 
-  void setOwnedKey(not_null<const char*> k) {
+  void setKey(const char* k, storage_policies::store_by_copy) {
+    ARDUINOJSON_ASSERT(k != NULL);
     _flags |= KEY_IS_OWNED;
-    _key = k.get();
+    _key = k;
   }
 
-  void setLinkedKey(not_null<const char*> k) {
+  void setKey(const char* k, storage_policies::store_by_address) {
+    ARDUINOJSON_ASSERT(k != NULL);
     _flags &= VALUE_MASK;
-    _key = k.get();
+    _key = k;
   }
 
   const char* key() const {
@@ -93,8 +97,10 @@ class VariantSlot {
   }
 
   void movePointers(ptrdiff_t stringDistance, ptrdiff_t variantDistance) {
-    if (_flags & KEY_IS_OWNED) _key += stringDistance;
-    if (_flags & VALUE_IS_OWNED) _content.asString += stringDistance;
+    if (_flags & KEY_IS_OWNED)
+      _key += stringDistance;
+    if (_flags & VALUE_IS_OWNED)
+      _content.asString += stringDistance;
     if (_flags & COLLECTION_MASK)
       _content.asCollection.movePointers(stringDistance, variantDistance);
   }

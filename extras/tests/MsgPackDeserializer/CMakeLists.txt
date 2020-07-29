@@ -14,5 +14,4 @@ add_executable(MsgPackDeserializerTests
 	notSupported.cpp
 )
 
-target_link_libraries(MsgPackDeserializerTests catch)
 add_test(MsgPackDeserializer MsgPackDeserializerTests)

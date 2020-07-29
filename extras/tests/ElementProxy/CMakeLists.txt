@@ -9,7 +9,7 @@ add_executable(ElementProxyTests
 	remove.cpp
 	set.cpp
 	size.cpp
+	subscript.cpp
 )
 
-target_link_libraries(ElementProxyTests catch)
 add_test(ElementProxy ElementProxyTests)
